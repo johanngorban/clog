@@ -55,23 +55,19 @@ static const char *get_type_name(enum LoggingType type) {
 }
 
 static const char *note_to_str(enum LoggingType type, const char *message, const time_t *time) {
-    const char *time_str = ctime(time);
+    struct tm *timeinfo = localtime(time);
+    char time_buffer[20];
+    strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
+
     const char *type_str = get_type_name(type);
     
-    char *clean_time = strdup(time_str);
-    if (clean_time) {
-        clean_time[strlen(clean_time) - 1] = '\0';
-    }
-
-    size_t len = strlen(clean_time) + strlen(type_str) + strlen(message) + 3;
-    char *result = (char *) malloc(len);
+    size_t len = strlen(time_buffer) + strlen(type_str) + strlen(message) + 3; // +2 пробела + \0
+    char *result = malloc(len);
     if (result == NULL) {
-        free(clean_time);
         return NULL;
     }
 
-    snprintf(result, len, "%s %s %s", clean_time, type_str, message);
-
+    snprintf(result, len, "%s %s %s", time_buffer, type_str, message);
     return result;
 }
 

@@ -1,9 +1,9 @@
 #pragma once
 
 enum LoggingType {
-    Debug,
-    Info,
-    Warning,
-    Error,
-    Fatal
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+    FATAL
 };

@@ -4,4 +4,4 @@
 #include <time.h>
 #include <stdio.h>
 
-void logging_write(FILE *file, enum LoggingType type, const char *message);
+void logger(FILE *file, enum LoggingType type, const char *message);

@@ -9,7 +9,7 @@ static void file_write(FILE *file, const char *note);
 
 static const char *note_to_str(enum LoggingType type, const char *message, const time_t *time);
 
-void logging_write(FILE *file, enum LoggingType type, const char *message) {
+void logger(FILE *file, enum LoggingType type, const char *message) {
     if (file == NULL) return;
 
     time_t raw_time;
@@ -31,19 +31,19 @@ void logging_write(FILE *file, enum LoggingType type, const char *message) {
 static const char *get_type_name(enum LoggingType type) {
     char *message;
     switch (type) {
-    case Debug:
+    case DEBUG:
         message = "[DEBUG]";
         break;
-    case Info:
+    case INFO:
         message = "[INFO]";
         break;
-    case Warning:
+    case WARNING:
         message = "[WARNING]";
         break;
-    case Error:
+    case ERROR:
         message = "[ERROR]";
         break;
-    case Fatal:
+    case FATAL:
         message = "[FATAL]";
         break;
     default:

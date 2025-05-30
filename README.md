@@ -88,6 +88,20 @@ void logger(FILE *file, enum LoggingType type, const char *message);
 - `type` – Log level (e.g., `INFO`, `ERROR`)
 - `message` – Log message string
 
+However you can use the logging function directly for each log type instead:
+
+```c
+void log_debug(FILE *file, const char *message);
+
+void log_info(FILE *file, const char *message);
+
+void log_warning(FILE *file, const char *message);
+
+void log_error(FILE *file, const char *message);
+
+void log_fatal(FILE *file, const char *message);
+```
+
 ---
 Note: the best way to use a file for logging is to open it with the flag "a" and check this pointer.
 

@@ -28,13 +28,13 @@ static const char *create_log(enum LoggingType type, const char *message, const 
     char *line_number = (char *) malloc(5);
     sprintf(line_number, "%d", line);
     
-    size_t len = strlen(file) + strlen(line_number) + strlen(time_buffer) + strlen(type_str) + strlen(message) + 5; // +2 пробела + \0
+    size_t len = strlen(file) + strlen(line_number) + strlen(time_buffer) + strlen(type_str) + strlen(message) + 5;
     char *result = (char *) malloc(len);
     if (result == NULL) {
         return NULL;
     }
 
-    snprintf(result, len, "%s %s %s %s %s", time_buffer, file, line_number,type_str, message);
+    sprintf(result, len, "%s %s %s %s %s\n", time_buffer, file, line_number,type_str, message);
     return result;
 }
 

@@ -4,14 +4,19 @@
 #include <time.h>
 #include <stdio.h>
 
-void logger(FILE *file, enum LoggingType type, const char *message);
+#define logger(dest, type, message_, file_, line_) logger_(destination_, type_, message_, file_, line_)
 
-void log_debug(FILE *file, const char *message);
+// #define logger(type, message) logger_(stdout, type, message, __FILE__, __LINE__)
 
-void log_info(FILE *file, const char *message);
+#define log_debug(destination_, message_) logger_(destination_, DEBUG, message_, __FILE__, __LINE__)
 
-void log_warning(FILE *file, const char *message);
+#define log_info(destination_, message_) logger_(destination_, INFO, message_, __FILE__, __LINE__)
 
-void log_error(FILE *file, const char *message);
+#define log_warning(destination_, message_) logger_(destination_, WARNING, message_, __FILE__, __LINE__)
 
-void log_fatal(FILE *file, const char *message);
+#define log_error(destination_, message_) logger_(destination_, ERROR, message_, __FILE__, __LINE__)
+
+#define log_fatal(destination_, message_) logger_(destination_, FATAL, message_, __FILE__, __LINE__)
+
+
+void logger_(FILE *dest, enum LoggingType type, const char *message, const char *file, const size_t line);

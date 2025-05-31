@@ -18,26 +18,29 @@ static const char *get_type_name(enum LoggingType type) {
     return message;
 }
 
-static const char *note_to_str(enum LoggingType type, const char *message, const time_t *time) {
+static const char *create_log(enum LoggingType type, const char *message, const time_t *time, const char *file, const size_t line) {
     struct tm *timeinfo = localtime(time);
     char time_buffer[20];
     strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
 
     const char *type_str = get_type_name(type);
+
+    char *line_number = (char *) malloc(5);
+    sprintf(line_number, "%d", line);
     
-    size_t len = strlen(time_buffer) + strlen(type_str) + strlen(message) + 3; // +2 пробела + \0
-    char *result = malloc(len);
+    size_t len = strlen(file) + strlen(line_number) + strlen(time_buffer) + strlen(type_str) + strlen(message) + 5; // +2 пробела + \0
+    char *result = (char *) malloc(len);
     if (result == NULL) {
         return NULL;
     }
 
-    snprintf(result, len, "%s %s %s", time_buffer, type_str, message);
+    snprintf(result, len, "%s %s %s %s %s", time_buffer, file, line_number,type_str, message);
     return result;
 }
 
-static void file_write(FILE *file, const char *note) {
-    if (file) {
-        fprintf(file, "%s\n", note);
+static void dest_write(FILE *dest, const char *note) {
+    if (dest) {
+        fprintf(dest, "%s\n", note);
     }
 }
 
@@ -45,41 +48,21 @@ static void stdout_write(const char *note) {
     fprintf(stdout, "%s\n", note);
 }
 
-void logger(FILE *file, enum LoggingType type, const char *message) {
-    if (file == NULL) return;
+void logger_(FILE *dest, enum LoggingType type, const char *message, const char *file, const size_t line) {
+    if (dest == NULL) return;
 
     time_t raw_time;
     time(&raw_time);
 
-    const char *note = note_to_str(type, message, &raw_time);
+    const char *note = create_log(type, message, &raw_time, file, line);
     if (note == NULL) {
         return;
     }
 
-    if (file == stdout) {
+    if (dest == stdout) {
         stdout_write(note);
     } 
     else {
-        file_write(file, note);
+        dest_write(dest, note);
     }
-}
-
-void log_debug(FILE *file, const char *message) {
-    logger(file, DEBUG, message);
-}
-
-void log_info(FILE *file, const char *message) {
-    logger(file, INFO, message);
-}
-
-void log_warning(FILE *file, const char *message) {
-    logger(file, WARNING, message);
-}
-
-void log_error(FILE *file, const char *message) {
-    logger(file, ERROR, message);
-}
-
-void log_fatal(FILE *file, const char *message) {
-    logger(file, FATAL, message);
 }

@@ -4,7 +4,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#define logger(destination_, type_, message_, file_, line_) logger_(destination_, type_, message_, file_, line_)
+#define logger(destination_, type_, message_) logger_(destination_, type_, message_, __FILE__, __LINE__)
 
 #define log_debug(destination_, message_) logger_(destination_, DEBUG, message_, __FILE__, __LINE__)
 

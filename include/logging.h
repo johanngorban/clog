@@ -1,21 +1,29 @@
 #pragma once
 
 #include "types.h"
-#include <time.h>
 #include <stdio.h>
+#include <stdarg.h>
 
-#define logger(destination_, type_, message_) logger_(destination_, type_, message_, __FILE__, __LINE__)
+#define log_init(...) log_init_(sizeof (char *[]) {__VA_ARGS__} / sizeof (int), __VA_ARGS__)
 
-#define log_debug(destination_, message_) logger_(destination_, DEBUG, message_, __FILE__, __LINE__)
+#define logger(type_, message_) logger_(type_, message_, __FILE__, __LINE__)
 
-#define log_info(destination_, message_) logger_(destination_, INFO, message_, __FILE__, __LINE__)
+#define log_debug(message_) logger_(DEBUG, message_, __FILE__, __LINE__)
 
-#define log_warning(destination_, message_) logger_(destination_, WARNING, message_, __FILE__, __LINE__)
+#define log_info(message_) logger_(INFO, message_, __FILE__, __LINE__)
 
-#define log_error(destination_, message_) logger_(destination_, ERROR, message_, __FILE__, __LINE__)
+#define log_warning(message_) logger_(WARNING, message_, __FILE__, __LINE__)
 
-#define log_fatal(destination_, message_) logger_(destination_, FATAL, message_, __FILE__, __LINE__)
+#define log_error(message_) logger_(ERROR, message_, __FILE__, __LINE__)
 
-/* General function */
+#define log_fatal(message_) logger_(FATAL, message_, __FILE__, __LINE__)
 
-void logger_(FILE *dest, enum LoggingType type, const char *message, const char *file, const size_t line);
+/* General functions */
+
+void log_file_append(const char *path);
+
+void logger_(LoggingType type, const char *message, const char *file, const size_t line);
+
+void log_init_(size_t args, ...); 
+
+void log_exit();

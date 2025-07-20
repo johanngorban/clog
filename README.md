@@ -105,19 +105,21 @@ void log_fatal(FILE *file, const char *message);
 ---
 Note: the best way to use a file for logging is to open it with the flag "a" and check this pointer.
 
-## Examples
+## Code example
+```c 
+#include "logging.h"
 
-```c
-// As printf analog
-logger(stdout, INFO, "Server started.");
-logger(stdout, DEBUG, "Retrying request...");
-```
-```c
-// Write into the file
-FILE *log = fopen("log.txt", "a");
-if (log) {
-    logger(log, WARNING, "Disk space low.");
-    logger(log, FATAL, "Unexpected shutdown.");
-    fclose(log);
+int main() {
+    log_init("main.log", "debug.log");
+
+    log_info("Application initialized");
+    log_debug("Checking variable values");
+    
+    if (some_error) {
+        log_error("An error occurred during processing");
+    }
+
+    log_exit();
+    return 0;
 }
 ```

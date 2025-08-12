@@ -17,7 +17,7 @@ static void print_log(const char *log);
 
 // General functions
 
-void log_init_(size_t args, ...) {
+size_t log_init_(size_t args, ...) {
     va_list ap;
     va_start(ap, args);
 
@@ -29,6 +29,8 @@ void log_init_(size_t args, ...) {
     }
 
     va_end(ap);
+
+    return logging_dests.current_dest_count;
 }
 
 void logger_(LoggingType type, const char *message, const char *file, const size_t line) {
@@ -45,16 +47,20 @@ void logger_(LoggingType type, const char *message, const char *file, const size
     return;
 }
 
-void log_file_append(const char *path) {
+int log_file_append(const char *path) {
     if (logging_dests.current_dest_count >= MAX_DESTINATION_COUNT) {
-        return;
+        return 0;
     }
     FILE *log_file = fopen(path, "a");
     if (log_file) {
         size_t current_index = logging_dests.current_dest_count;
         logging_dests.dest[current_index] = log_file;
         logging_dests.current_dest_count++;
+        
+        return 1;
     }
+
+    return 0;
 }
 
 void log_exit() {

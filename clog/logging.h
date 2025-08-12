@@ -22,10 +22,10 @@
 /*
 *   Interface functions
 */
-void log_file_append(const char *path);
+int log_file_append(const char *path);
 
 void logger_(LoggingType type, const char *message, const char *file, const size_t line);
 
-void log_init_(size_t args, ...); 
+size_t log_init_(size_t args, ...); 
 
 void log_exit();

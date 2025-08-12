@@ -1,125 +1,74 @@
 # Logging library for C
 
-A lightweight logging library for C projects, supporting multiple log levels and output to `stdout` or file.
+A lightweight logging library for C projects, supporting multiple log levels and output to `stdout` or file, built in pure C and CMake
 
 ---
-
-## Features
-
-- Multiple log levels: DEBUG, INFO, WARNING, ERROR, FATAL
-- Timestamps in log messages
-- Output to standard output or to file
-- Simple integration into existing C projects
-
+# How to use
+clog is built using pure C and CMake, so it does not require any other dependencies. All you need is in the list below:
+- CMake (starting with 3.16)
+- gcc or clang (c11)
 ---
 
-## Requirements
+# API reference
+You can use direct or mediaded logging. Direct logging allows you specify what type of logging you want to use (the list below), message you want to see in the log, log source file and line. Instead of that you can use mediaded (e.g. simplified) functions.
 
-- C compiler with C11 support
-- CMake 3.16 or newer
 
----
-
-## Building
-
-To build the static library using CMake:
-
-```sh
-git clone https://your.repo.url/clogs.git
-cd clogs
-mkdir build
-cd build
-cmake ..
-make
-```
-
-After the build, the `clogs` static library will be available in the `build` directory.
-
----
-
-## Using as a Library
-
-### 1. Include in Your Project
-
-Copy the `include/` and `source/` directories into your project, or add `clogs` as a submodule.
-
-The other way you can use the library is to use it as a domain (DDD). That is, the repository is a domain you can include in your project
-
-### 2. Build with CMake
-
-Add the following lines to your `CMakeLists.txt`:
-
-```cmake
-add_subdirectory(clogs)
-
-target_link_libraries(your_target PRIVATE clogs)
-target_include_directories(your_target PRIVATE clogs/include)
-```
-
-Make sure your `clogs` directory has its own `CMakeLists.txt` as shown earlier.
-
----
-
-## API Usage
-
-### Log Levels
-
-The available log levels are defined in the `LoggingType` enum:
-
+### Log types
+The log type you need to specify to make a log note. There is no point to describe every type, I hope these names are clear enough
 ```c
-enum LoggingType {
+typedef enum {
     DEBUG,
     INFO,
     WARNING,
     ERROR,
     FATAL
-};
+} LoggingType;
 ```
 
-### Logging Function
-
-The main logging function is:
+### Functions
 
 ```c
-void logger(FILE *file, enum LoggingType type, const char *message);
+size_t log_init(...)
 ```
 
-- `file` – Output stream (`stdout` or file opened with `fopen`)
-- `type` – Log level (e.g., `INFO`, `ERROR`)
-- `message` – Log message string
+`log_init` is the main function to *start* logging. It accepts as many log file paths as you want. It is your responsibility to manage memory - init as many log files as you *need*. It requires one path at least and returns the count of initialized files.
 
-However you can use the logging function directly for each log type instead:
 
 ```c
-void log_debug(FILE *file, const char *message);
-
-void log_info(FILE *file, const char *message);
-
-void log_warning(FILE *file, const char *message);
-
-void log_error(FILE *file, const char *message);
-
-void log_fatal(FILE *file, const char *message);
+int log_file_append(const char *path)
 ```
+
+You can `log_file_append` if you need add one more log file. It requires the file path. Returns `1` if file initialized successfully and `0` otherwise.
+
+```c
+void logger(LoggingType type, const char *message)
+```
+
+`logger` is the main function for logging. It needs only log type and message you want to display. It will display the message in all log files you initialized before. 
+
+Note: if you want more control and need to specify source file and line, you can use `logger_` instead. See source code for that
+
+
+```c
+void log_debug(message_)
+
+void log_info(message_)
+
+void log_warning(message_)
+
+void log_error(message_)
+
+void log_fatal(message_)
+```
+
+Here is a bunch of functions for simplified logging. There is no need to describe every function separately because of the names. Every function accepts message and displays it in all log files initialized before
+
+Note: actually, these functions are macros. So you do not have to worry about stack usage. It is just the interface of `logger_` function
+
+```c
+void log_exit()
+```
+
+The function for deinitialization of all log files. It closes files and deallocates file descriptors. This function is *optional* since it is set as `atexit` in the initialization function `log_init`.
 
 ---
-Note: the best way to use a file for logging is to open it with the flag "a" and check this pointer.
-
-## Code example
-```c 
-#include "logging.h"
-
-int main() {
-    log_init("main.log", "debug.log");
-
-    log_info("Application initialized");
-    log_debug("Checking variable values");
-    
-    if (some_error) {
-        log_error("An error occurred during processing");
-    }
-
-    log_exit();
-    return 0;
-}
-```

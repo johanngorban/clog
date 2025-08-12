@@ -71,6 +71,7 @@ static void print_log(const char *log) {
     for (size_t i = 0; i < logging_dests.current_dest_count; i++) {
         if (logging_dests.dest[i]) {
             fprintf(logging_dests.dest[i], "%s", log);
+            fflush(logging_dests.dest[i]);
         }
     }
 }

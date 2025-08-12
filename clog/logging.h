@@ -8,18 +8,20 @@
 
 #define logger(type_, message_) logger_(type_, message_, __FILE__, __LINE__)
 
-#define log_debug(message_) logger_(DEBUG, message_, __FILE__, __LINE__)
+#define log_debug(message_)     logger_(DEBUG, message_, __FILE__, __LINE__)
 
-#define log_info(message_) logger_(INFO, message_, __FILE__, __LINE__)
+#define log_info(message_)      logger_(INFO, message_, __FILE__, __LINE__)
 
-#define log_warning(message_) logger_(WARNING, message_, __FILE__, __LINE__)
+#define log_warning(message_)   logger_(WARNING, message_, __FILE__, __LINE__)
 
-#define log_error(message_) logger_(ERROR, message_, __FILE__, __LINE__)
+#define log_error(message_)     logger_(ERROR, message_, __FILE__, __LINE__)
 
-#define log_fatal(message_) logger_(FATAL, message_, __FILE__, __LINE__)
+#define log_fatal(message_)     logger_(FATAL, message_, __FILE__, __LINE__)
 
-/* General functions */
 
+/*
+*   Interface functions
+*/
 void log_file_append(const char *path);
 
 void logger_(LoggingType type, const char *message, const char *file, const size_t line);

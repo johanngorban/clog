@@ -30,6 +30,7 @@ size_t log_init_(size_t args, ...) {
 
     va_end(ap);
 
+    atexit(log_exit);
     return logging_dests.current_dest_count;
 }
 

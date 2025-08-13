@@ -7,11 +7,11 @@
 #define MAX_LOG_LENGTH 1024
 #define MAX_LINE_NUMBER_LENGTH 5
 
-static LoggingDestinations logging_dests;
+static logging_destination_t logging_dests;
 
-static const char *get_type_name(LoggingType type);
+static const char *get_type_name(log_type type);
 
-static const char *create_log(LoggingType type, const char *message, const time_t *time, const char *file, const size_t line);
+static const char *create_log(log_type type, const char *message, const time_t *time, const char *file, const size_t line);
 
 static void print_log(const char *log);
 
@@ -34,7 +34,7 @@ size_t log_init_(size_t args, ...) {
     return logging_dests.current_dest_count;
 }
 
-void logger_(LoggingType type, const char *message, const char *file, const size_t line) {
+void logger_(log_type type, const char *message, const char *file, const size_t line) {
     time_t raw_time;
     time(&raw_time);
 
@@ -83,7 +83,7 @@ static void print_log(const char *log) {
     }
 }
 
-static const char *create_log(LoggingType type, const char *message, const time_t *time, const char *file, const size_t line) {
+static const char *create_log(log_type type, const char *message, const time_t *time, const char *file, const size_t line) {
     struct tm *timeinfo = localtime(time);
     char time_buffer[20];
     strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
@@ -103,7 +103,7 @@ static const char *create_log(LoggingType type, const char *message, const time_
     return log;
 } 
 
-static const char *get_type_name(LoggingType type) {
+static const char *get_type_name(log_type type) {
     char *message;
     switch (type) {
     case DEBUG:     message = "[DEBUG]"; break;

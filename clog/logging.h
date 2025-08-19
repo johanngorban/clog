@@ -24,8 +24,8 @@
 */
 int log_file_append(const char *path);
 
-void logger_(log_type type, const char *message, const char *file, const size_t line);
+void logger_(log_type_t type, const char *message, const char *file, const size_t line);
 
-size_t log_init_(size_t args, ...); 
+int log_init_(size_t args, ...); 
 
 void log_exit();

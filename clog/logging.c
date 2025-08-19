@@ -9,26 +9,34 @@
 #define MAX_LOG_LENGTH 1024
 #define MAX_LINE_NUMBER_LENGTH 5
 
+
+/*
+* Main objects and flags
+*/
 static bool logging_init = false;
 
-static logging_destination_t logging_dests;
+static log_destinations_t logs;
 
-pthread_mutex_t logging_mutex;
+pthread_mutex_t logs_mutex;
 
-static const char *get_type_name(log_type type);
+/*
+* Helper functions
+*/
+static const char *get_type_name(log_type_t type);
 
-static const char *create_log(log_type type, const char *message, const time_t *time, const char *file, const size_t line);
+static const char *create_log(log_type_t type, const char *message, const time_t *time, const char *file, const size_t line);
 
 static void print_log(const char *log);
 
-// General functions
-
-size_t log_init_(size_t args, ...) {
+/*
+* General functions
+*/
+int log_init_(size_t args, ...) {
     if (logging_init == true) {
         return 0;
     }
 
-    pthread_mutex_init(&logging_mutex, NULL);
+    pthread_mutex_init(&logs_mutex, NULL);
 
     va_list ap;
     va_start(ap, args);
@@ -45,10 +53,10 @@ size_t log_init_(size_t args, ...) {
     va_end(ap);
 
     atexit(log_exit);
-    return logging_dests.current_dest_count;
+    return logs.current_dest_count;
 }
 
-void logger_(log_type type, const char *message, const char *file, const size_t line) {
+void logger_(log_type_t type, const char *message, const char *file, const size_t line) {
     time_t raw_time;
     time(&raw_time);
 
@@ -64,58 +72,60 @@ void logger_(log_type type, const char *message, const char *file, const size_t 
 
 int log_file_append(const char *path) {
     int result = 0;
-    if (logging_dests.current_dest_count >= MAX_DESTINATION_COUNT) {
+    if (logs.current_dest_count >= MAX_DESTINATION_COUNT) {
         return result;
     }
 
-    pthread_mutex_lock(&logging_mutex);
+    pthread_mutex_lock(&logs_mutex);
     
     FILE *log_file = fopen(path, "a");
     if (log_file) {
-        size_t current_index = logging_dests.current_dest_count;
-        logging_dests.dest[current_index] = log_file;
-        logging_dests.current_dest_count++;
+        size_t current_index = logs.current_dest_count;
+        logs.dest[current_index] = log_file;
+        logs.current_dest_count++;
         
         result++;
     }
 
-    pthread_mutex_unlock(&logging_mutex);
+    pthread_mutex_unlock(&logs_mutex);
 
     return result;
 }
 
 void log_exit() {
-    pthread_mutex_lock(&logging_mutex);
+    pthread_mutex_lock(&logs_mutex);
 
-    for (size_t i = 0; i < logging_dests.current_dest_count; i++) {
-        if (logging_dests.dest[i]) {
-            fclose(logging_dests.dest[i]);
+    for (size_t i = 0; i < logs.current_dest_count; i++) {
+        if (logs.dest[i]) {
+            fclose(logs.dest[i]);
         }
     }
-    logging_dests.current_dest_count = 0;
+    logs.current_dest_count = 0;
     logging_init = false;
-    
-    pthread_mutex_unlock(&logging_mutex);
 
-    pthread_mutex_destroy(&logging_mutex);
+    pthread_mutex_unlock(&logs_mutex);
+
+    pthread_mutex_destroy(&logs_mutex);
 }
 
-// ----------------------------------------
 
+/*
+* Helper functions
+*/
 static void print_log(const char *log) {
-    pthread_mutex_lock(&logging_mutex);
+    pthread_mutex_lock(&logs_mutex);
 
-    for (size_t i = 0; i < logging_dests.current_dest_count; i++) {
-        if (logging_dests.dest[i]) {
-            fprintf(logging_dests.dest[i], "%s", log);
-            fflush(logging_dests.dest[i]);
+    for (size_t i = 0; i < logs.current_dest_count; i++) {
+        if (logs.dest[i]) {
+            fprintf(logs.dest[i], "%s", log);
+            fflush(logs.dest[i]);
         }
     }
 
-    pthread_mutex_unlock(&logging_mutex);
+    pthread_mutex_unlock(&logs_mutex);
 }
 
-static const char *create_log(log_type type, const char *message, const time_t *time, const char *file, const size_t line) {
+static const char *create_log(log_type_t type, const char *message, const time_t *time, const char *file, const size_t line) {
     struct tm *timeinfo = localtime(time);
     char time_buffer[20];
     strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
@@ -135,15 +145,27 @@ static const char *create_log(log_type type, const char *message, const time_t *
     return log;
 } 
 
-static const char *get_type_name(log_type type) {
+static const char *get_type_name(log_type_t type) {
     char *message;
     switch (type) {
-    case DEBUG:     message = "[DEBUG]"; break;
-    case INFO:      message = "[INFO]"; break;
-    case WARNING:   message = "[WARNING]"; break;
-    case ERROR:     message = "[ERROR]"; break;
-    case FATAL:     message = "[FATAL]"; break;
-    default:        message = "[UNKNOWN]"; break;
+    case DEBUG:     
+        message = "[DEBUG]"; 
+        break;
+    case INFO: 
+        message = "[INFO]"; 
+        break;
+    case WARNING: 
+        message = "[WARNING]"; 
+        break;
+    case ERROR:
+        message = "[ERROR]"; 
+        break;
+    case FATAL:
+        message = "[FATAL]"; 
+        break;
+    default:
+        message = "[UNKNOWN]"; 
+        break;
     }
 
     return message;

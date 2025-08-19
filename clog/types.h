@@ -11,9 +11,9 @@ typedef enum {
     WARNING,
     ERROR,
     FATAL
-} log_type;
+} log_type_t;
 
 typedef struct {
     FILE *dest[MAX_DESTINATION_COUNT];
     size_t current_dest_count;
-} logging_destination_t;
+} log_destinations_t;

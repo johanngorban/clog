@@ -3,11 +3,17 @@
 #include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <stdbool.h>
 
 #define MAX_LOG_LENGTH 1024
 #define MAX_LINE_NUMBER_LENGTH 5
 
+static bool logging_init = false;
+
 static logging_destination_t logging_dests;
+
+pthread_mutex_t logging_mutex;
 
 static const char *get_type_name(log_type type);
 
@@ -18,6 +24,12 @@ static void print_log(const char *log);
 // General functions
 
 size_t log_init_(size_t args, ...) {
+    if (logging_init == true) {
+        return 0;
+    }
+
+    pthread_mutex_init(&logging_mutex, NULL);
+
     va_list ap;
     va_start(ap, args);
 
@@ -27,6 +39,8 @@ size_t log_init_(size_t args, ...) {
             log_file_append(path);
         }
     }
+
+    logging_init = true;
 
     va_end(ap);
 
@@ -49,38 +63,56 @@ void logger_(log_type type, const char *message, const char *file, const size_t 
 }
 
 int log_file_append(const char *path) {
+    int result = 0;
     if (logging_dests.current_dest_count >= MAX_DESTINATION_COUNT) {
-        return 0;
+        return result;
     }
+
+    pthread_mutex_lock(&logging_mutex);
+    
     FILE *log_file = fopen(path, "a");
     if (log_file) {
         size_t current_index = logging_dests.current_dest_count;
         logging_dests.dest[current_index] = log_file;
         logging_dests.current_dest_count++;
         
-        return 1;
+        result++;
     }
 
-    return 0;
+    pthread_mutex_unlock(&logging_mutex);
+
+    return result;
 }
 
 void log_exit() {
+    pthread_mutex_lock(&logging_mutex);
+
     for (size_t i = 0; i < logging_dests.current_dest_count; i++) {
         if (logging_dests.dest[i]) {
             fclose(logging_dests.dest[i]);
         }
     }
+    logging_dests.current_dest_count = 0;
+    logging_init = false;
+    
+    pthread_mutex_unlock(&logging_mutex);
+
+    pthread_mutex_destroy(&logging_mutex);
 }
 
 // ----------------------------------------
 
 static void print_log(const char *log) {
+    pthread_mutex_lock(&logging_mutex);
+
     for (size_t i = 0; i < logging_dests.current_dest_count; i++) {
         if (logging_dests.dest[i]) {
             fprintf(logging_dests.dest[i], "%s", log);
             fflush(logging_dests.dest[i]);
         }
     }
+
+    pthread_mutex_unlock(&logging_mutex);
 }
 
 static const char *create_log(log_type type, const char *message, const time_t *time, const char *file, const size_t line) {

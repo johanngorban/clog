@@ -67,6 +67,8 @@ void logger_(log_type_t type, const char *message, const char *file, const size_
 
     print_log(log);
 
+    free(log);
+
     return;
 }
 

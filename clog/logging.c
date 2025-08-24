@@ -8,6 +8,7 @@
 
 #define MAX_LOG_LENGTH 1024
 #define MAX_LINE_NUMBER_LENGTH 5
+#define MAX_DESTINATION_COUNT 1024
 
 
 /*
@@ -15,7 +16,8 @@
 */
 static bool logging_init = false;
 
-static log_destinations_t logs;
+static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
+static size_t log_dest_counter = 0;
 
 pthread_mutex_t logs_mutex;
 
@@ -27,6 +29,67 @@ static const char *get_type_name(log_type_t type);
 static const char *create_log(log_type_t type, const char *message, const time_t *time, const char *file, const size_t line);
 
 static void print_log(const char *log);
+
+// File sinks
+
+static void file_log_print(const char *message, void *context) {
+    FILE *f = (FILE *) context;
+
+    if (f == NULL) {
+        return;
+    }
+
+    fprintf(f, "%s", message);
+    fflush(f);
+}
+
+static void file_close(void *context) {
+    FILE *f = (FILE *) context;
+    if (f != NULL) {
+        fflush(f);
+        fclose(f);
+    }
+}
+
+int log_file_append(const char *path) {
+    if (log_dest_counter >= MAX_DESTINATION_COUNT) {
+        return 0;
+    } 
+
+    FILE *f = fopen(path, "a");
+
+    if (f == NULL) {
+        return 0;
+    }
+
+    log_destinations[log_dest_counter].print = file_log_print;
+    log_destinations[log_dest_counter].close = file_close;
+    log_destinations[log_dest_counter].context = f;
+
+    log_dest_counter++;
+    return 1;
+}
+
+// Stdout sinks
+
+static void stdout_log_print(const char *message, void *context) {
+    (void) context;
+    printf("%s", message);
+}
+
+int log_stdout_append() {
+    if (log_dest_counter >= MAX_DESTINATION_COUNT) {
+        return 0;
+    }
+
+    log_destinations[log_dest_counter].print = stdout_log_print;
+    log_destinations[log_dest_counter].close = NULL;
+    log_destinations[log_dest_counter].context = NULL;
+
+    log_dest_counter++;
+
+    return 1;
+}
 
 /*
 * General functions
@@ -53,7 +116,6 @@ int log_init_(size_t args, ...) {
     va_end(ap);
 
     atexit(log_exit);
-    return logs.current_dest_count;
 }
 
 void logger_(log_type_t type, const char *message, const char *file, const size_t line) {
@@ -72,37 +134,16 @@ void logger_(log_type_t type, const char *message, const char *file, const size_
     return;
 }
 
-int log_file_append(const char *path) {
-    int result = 0;
-    if (logs.current_dest_count >= MAX_DESTINATION_COUNT) {
-        return result;
-    }
-
-    pthread_mutex_lock(&logs_mutex);
-    
-    FILE *log_file = fopen(path, "a");
-    if (log_file) {
-        size_t current_index = logs.current_dest_count;
-        logs.dest[current_index] = log_file;
-        logs.current_dest_count++;
-        
-        result++;
-    }
-
-    pthread_mutex_unlock(&logs_mutex);
-
-    return result;
-}
-
 void log_exit() {
     pthread_mutex_lock(&logs_mutex);
 
-    for (size_t i = 0; i < logs.current_dest_count; i++) {
-        if (logs.dest[i]) {
-            fclose(logs.dest[i]);
+    for (size_t i = 0; i < log_dest_counter; i++) {
+        if (log_destinations[i].close != NULL) {
+            log_destinations[i].close(log_destinations[i].context);
         }
     }
-    logs.current_dest_count = 0;
+
+    log_dest_counter = 0;
     logging_init = false;
 
     pthread_mutex_unlock(&logs_mutex);
@@ -117,11 +158,8 @@ void log_exit() {
 static void print_log(const char *log) {
     pthread_mutex_lock(&logs_mutex);
 
-    for (size_t i = 0; i < logs.current_dest_count; i++) {
-        if (logs.dest[i]) {
-            fprintf(logs.dest[i], "%s", log);
-            fflush(logs.dest[i]);
-        }
+    for (size_t i = 0; i < log_dest_counter; i++) {
+        log_destinations[i].print(log, log_destinations[i].context);
     }
 
     pthread_mutex_unlock(&logs_mutex);

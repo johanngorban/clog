@@ -13,7 +13,13 @@ typedef enum {
     FATAL
 } log_type_t;
 
+
+typedef void (*log_printer)(const char *message, void *context);
+
+typedef void (*log_closer)(void *context);
+
 typedef struct {
-    FILE *dest[MAX_DESTINATION_COUNT];
-    size_t current_dest_count;
+    log_printer print;
+    log_closer close; 
+    void *context;
 } log_destinations_t;

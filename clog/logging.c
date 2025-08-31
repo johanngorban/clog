@@ -116,6 +116,8 @@ int log_init_(size_t args, ...) {
     va_end(ap);
 
     atexit(log_exit);
+
+    return 1;
 }
 
 void logger_(log_type_t type, const char *message, const char *file, const size_t line) {

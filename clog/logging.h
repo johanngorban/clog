@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define log_init(...) log_init_(sizeof (char *[]) {__VA_ARGS__} / sizeof (int), __VA_ARGS__)
+#define log_init(...) log_init_(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
 
 #define logger(type_, message_) logger_(type_, message_, __FILE__, __LINE__)
 

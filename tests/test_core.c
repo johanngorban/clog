@@ -1,6 +1,11 @@
 #include "unity.h"
 #include "logging.h"
 
+void test_before_init() {
+    log_info("This message should be not displayed");
+    log_error("This message should be not displayed");
+}
+
 void test_log_init_valid() {
     log_init("logs");
 

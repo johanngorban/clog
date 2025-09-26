@@ -4,19 +4,19 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define log_init(...) log_init_(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
+#define log_init(...) __log_init(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
 
-#define logger(type_, message_) logger_(type_, message_, __FILE__, __LINE__)
+#define logger(type_, message_) __log(type_, message_, __FILE__, __LINE__)
 
-#define log_debug(message_)     logger_(DEBUG, message_, __FILE__, __LINE__)
+#define log_debug(message_)     __log(DEBUG, message_, __FILE__, __LINE__)
 
-#define log_info(message_)      logger_(INFO, message_, __FILE__, __LINE__)
+#define log_info(message_)      __log(INFO, message_, __FILE__, __LINE__)
 
-#define log_warning(message_)   logger_(WARNING, message_, __FILE__, __LINE__)
+#define log_warning(message_)   __log(WARNING, message_, __FILE__, __LINE__)
 
-#define log_error(message_)     logger_(ERROR, message_, __FILE__, __LINE__)
+#define log_error(message_)     __log(ERROR, message_, __FILE__, __LINE__)
 
-#define log_fatal(message_)     logger_(FATAL, message_, __FILE__, __LINE__)
+#define log_fatal(message_)     __log(FATAL, message_, __FILE__, __LINE__)
 
 
 /*
@@ -24,8 +24,8 @@
 */
 int log_file_append(const char *path);
 
-void logger_(log_type_t type, const char *message, const char *file, const size_t line);
+void __log(log_type_t type, const char *message, const char *file, const size_t line);
 
-int log_init_(size_t args, ...); 
+int __log_init(size_t args, ...); 
 
 void log_exit();

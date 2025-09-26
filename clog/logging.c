@@ -94,7 +94,7 @@ int log_stdout_append() {
 /*
 * General functions
 */
-int log_init_(size_t args, ...) {
+int __log_init(size_t args, ...) {
     if (logging_init == true) {
         return 0;
     }
@@ -120,7 +120,7 @@ int log_init_(size_t args, ...) {
     return 1;
 }
 
-void logger_(log_type_t type, const char *message, const char *file, const size_t line) {
+void __log(log_type_t type, const char *message, const char *file, const size_t line) {
     time_t raw_time;
     time(&raw_time);
 

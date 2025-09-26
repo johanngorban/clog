@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stddef.h>
 
-#define MAX_DESTINATION_COUNT 32
-
 typedef enum {
     DEBUG,
     INFO,

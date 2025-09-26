@@ -126,7 +126,7 @@ void __log(log_type_t type, const char *message, const char *file, const size_t 
     if (!__log_allowed(type, log_level)) {
         return;
     }
-    
+
     time_t raw_time;
     time(&raw_time);
 
@@ -137,7 +137,7 @@ void __log(log_type_t type, const char *message, const char *file, const size_t 
 
     print_log(log);
 
-    free(log);
+    free((void *) log);
 
     return;
 }
@@ -181,7 +181,7 @@ static const char *create_log(log_type_t type, const char *message, const time_t
     const char *type_str = get_type_name(type);
 
     char line_number[MAX_LINE_NUMBER_LENGTH];
-    sprintf(line_number, "%d", line);
+    sprintf(line_number, "%zu", line);
     
     char *log = malloc(MAX_LOG_LENGTH);
     if (log == NULL) {

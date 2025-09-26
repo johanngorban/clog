@@ -16,7 +16,7 @@
 */
 static bool logging_init = false;
 
-static log_type_t log_type = INFO;
+static log_level_t log_level = INFO;
 
 static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
 static size_t log_dest_counter = 0;
@@ -26,9 +26,9 @@ pthread_mutex_t logs_mutex;
 /*
 * Helper functions
 */
-static const char *get_type_name(log_type_t type);
+static const char *get_level_name(log_level_t level);
 
-static const char *create_log(log_type_t type, const char *message, const time_t *time, const char *file, const size_t line);
+static const char *create_log(log_level_t level, const char *message, const time_t *time, const char *file, const size_t line);
 
 static void print_log(const char *log);
 
@@ -122,15 +122,15 @@ int __log_init(size_t args, ...) {
     return 1;
 }
 
-void __log(log_type_t type, const char *message, const char *file, const size_t line) {
-    if (type < log_type) {
+void __log(log_level_t level, const char *message, const char *file, const size_t line) {
+    if (level < log_level) {
         return;
     }
 
     time_t raw_time;
     time(&raw_time);
 
-    const char *log = create_log(type, message, &raw_time, file, line);
+    const char *log = create_log(level, message, &raw_time, file, line);
     if (log == NULL) {
         return;
     }
@@ -173,12 +173,12 @@ static void print_log(const char *log) {
     pthread_mutex_unlock(&logs_mutex);
 }
 
-static const char *create_log(log_type_t type, const char *message, const time_t *time, const char *file, const size_t line) {
+static const char *create_log(log_level_t level, const char *message, const time_t *time, const char *file, const size_t line) {
     struct tm *timeinfo = localtime(time);
     char time_buffer[20];
     strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
 
-    const char *type_str = get_type_name(type);
+    const char *level_str = get_level_name(level);
 
     char line_number[MAX_LINE_NUMBER_LENGTH];
     sprintf(line_number, "%zu", line);
@@ -188,14 +188,14 @@ static const char *create_log(log_type_t type, const char *message, const time_t
         return NULL;
     }
 
-    sprintf(log, "%-17s %s line: %s %-8s %s\n", time_buffer, file, line_number, type_str, message);
+    sprintf(log, "%-17s %s line: %s %-8s %s\n", time_buffer, file, line_number, level_str, message);
     
     return log;
 } 
 
-static const char *get_type_name(log_type_t type) {
+static const char *get_level_name(log_level_t level) {
     char *message;
-    switch (type) {
+    switch (level) {
     case DEBUG:     
         message = "[DEBUG]"; 
         break;
@@ -219,6 +219,6 @@ static const char *get_type_name(log_type_t type) {
     return message;
 }
 
-void __set_log_level(log_type_t level) {
-    log_type = level;
+void __set_log_level(log_level_t level) {
+    log_level = level;
 }

@@ -6,7 +6,7 @@
 
 #define log_init(...) __log_init(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
 
-#define logger(type_, message_) __log(type_, message_, __FILE__, __LINE__)
+#define logger(level_, message_) __log(level_, message_, __FILE__, __LINE__)
 
 #define log_debug(message_)     __log(DEBUG, message_, __FILE__, __LINE__)
 #define log_info(message_)      __log(INFO, message_, __FILE__, __LINE__)
@@ -25,9 +25,9 @@
 */
 int log_file_append(const char *path);
 
-void __set_log_level(log_type_t level);
+void __set_log_level(log_level_t level);
 
-void __log(log_type_t type, const char *message, const char *file, const size_t line);
+void __log(log_level_t level, const char *message, const char *file, const size_t line);
 
 int __log_init(size_t args, ...); 
 

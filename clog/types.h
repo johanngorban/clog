@@ -9,7 +9,7 @@ typedef enum {
     INFO    = 2,
     WARNING = 3,
     DEBUG   = 4,
-} log_type_t;
+} log_level_t;
 
 typedef void (*log_printer)(const char *message, void *context);
 

@@ -16,7 +16,7 @@
 */
 static bool logging_init = false;
 
-static log_level_t log_level = LOG_DEFAULT;
+static log_type_t log_type = INFO;
 
 static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
 static size_t log_dest_counter = 0;
@@ -123,7 +123,7 @@ int __log_init(size_t args, ...) {
 }
 
 void __log(log_type_t type, const char *message, const char *file, const size_t line) {
-    if (!__log_allowed(type, log_level)) {
+    if (type < log_type) {
         return;
     }
 
@@ -219,19 +219,6 @@ static const char *get_type_name(log_type_t type) {
     return message;
 }
 
-int __log_allowed(log_type_t type, log_level_t level) {
-    switch (type) {
-    case WARNING:
-        return level >= LOG_DEFAULT;
-    case INFO:
-        return level >= LOG_VERBOSE;
-    case DEBUG:
-        return level >= LOG_DEBUG;
-    case ERROR:
-        return level >= LOG_QUIET;
-    case FATAL:
-        return level >= LOG_QUIET;
-    }
-
-    return 0;
+void __set_log_level(log_type_t level) {
+    log_type = level;
 }

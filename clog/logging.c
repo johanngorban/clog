@@ -96,7 +96,7 @@ int log_stdout_append() {
 /*
 * General functions
 */
-int __clog_init() {
+int log_init() {
     if (logging_init == true) {
         return -1;
     }

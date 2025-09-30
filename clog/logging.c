@@ -96,30 +96,18 @@ int log_stdout_append() {
 /*
 * General functions
 */
-int __clog_init(size_t args, ...) {
+int __clog_init() {
     if (logging_init == true) {
-        return 0;
+        return -1;
     }
 
     pthread_mutex_init(&logs_mutex, NULL);
 
-    va_list ap;
-    va_start(ap, args);
-
-    for (size_t i = 0; i < args; i++) {
-        char *path = va_arg(ap, char *);
-        if (path) {
-            log_file_append(path);
-        }
-    }
-
     logging_init = true;
-
-    va_end(ap);
 
     atexit(log_exit);
 
-    return 1;
+    return 0;
 }
 
 void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {

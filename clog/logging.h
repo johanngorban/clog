@@ -8,10 +8,6 @@ extern "C" {
 #include <stdio.h>
 #include <stdarg.h>
 
-#define log_init(...) __clog_init(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
-
-#define logger(level_, fmt, ...) __clog(level_, __FILE__, __LINE__, fmt, ...)
-
 #define log_debug(fmt, ...)   __clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define log_info(fmt, ...)    __clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define log_warning(fmt, ...) __clog(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
@@ -36,7 +32,7 @@ void __set_clog_level(log_level_t level);
 
 void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
 
-int __clog_init(size_t args, ...); 
+int log_init(); 
 
 void log_exit();
 

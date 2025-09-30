@@ -8,32 +8,32 @@ extern "C" {
 #include <stdio.h>
 #include <stdarg.h>
 
-#define log_init(...) __log_init(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
+#define log_init(...) __clog_init(sizeof (char *[]) {__VA_ARGS__} / sizeof (char *), __VA_ARGS__)
 
-#define logger(level_, message_) __log(level_, message_, __FILE__, __LINE__)
+#define logger(level_, fmt, ...) __clog(level_, __FILE__, __LINE__, fmt, ...)
 
-#define log_debug(message_)     __log(DEBUG, message_, __FILE__, __LINE__)
-#define log_info(message_)      __log(INFO, message_, __FILE__, __LINE__)
-#define log_warning(message_)   __log(WARNING, message_, __FILE__, __LINE__)
-#define log_error(message_)     __log(ERROR, message_, __FILE__, __LINE__)
-#define log_fatal(message_)     __log(FATAL, message_, __FILE__, __LINE__)
+#define log_debug(fmt, ...)   __clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_info(fmt, ...)    __clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_warning(fmt, ...) __clog(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_error(fmt, ...)   __clog(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_fatal(fmt, ...)   __clog(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define set_debug()             __set_log_level(DEBUG)
-#define set_info()              __set_log_level(INFO)
-#define set_warning()           __set_log_level(WARNING)
-#define set_error()             __set_log_level(ERROR)
-#define set_fatal_only()        __set_log_level(FATAL)
+#define set_debug()             __set_clog_level(DEBUG)
+#define set_info()              __set_clog_level(INFO)
+#define set_warning()           __set_clog_level(WARNING)
+#define set_error()             __set_clog_level(ERROR)
+#define set_fatal_only()        __set_clog_level(FATAL)
 
 /*
 *   Interface functions
 */
 int log_file_append(const char *path);
 
-void __set_log_level(log_level_t level);
+void __set_clog_level(log_level_t level);
 
-void __log(log_level_t level, const char *message, const char *file, const size_t line);
+void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
 
-int __log_init(size_t args, ...); 
+int __clog_init(size_t args, ...); 
 
 void log_exit();
 

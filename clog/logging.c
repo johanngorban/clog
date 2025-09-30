@@ -96,7 +96,7 @@ int log_stdout_append() {
 /*
 * General functions
 */
-int __log_init(size_t args, ...) {
+int __clog_init(size_t args, ...) {
     if (logging_init == true) {
         return 0;
     }
@@ -122,10 +122,17 @@ int __log_init(size_t args, ...) {
     return 1;
 }
 
-void __log(log_level_t level, const char *message, const char *file, const size_t line) {
+void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
     if (level < log_level) {
         return;
     }
+
+    char message[MAX_LOG_LENGTH];
+    
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(message, sizeof(message), fmt, args);
+    va_end(args);
 
     time_t raw_time;
     time(&raw_time);
@@ -219,6 +226,6 @@ static const char *get_level_name(log_level_t level) {
     return message;
 }
 
-void __set_log_level(log_level_t level) {
+void __set_clog_level(log_level_t level) {
     log_level = level;
 }

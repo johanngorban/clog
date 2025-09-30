@@ -27,6 +27,8 @@ extern "C" {
 /*
 *   Interface functions
 */
+int log_stdout_append();
+
 int log_file_append(const char *path);
 
 void __set_clog_level(log_level_t level);

@@ -214,6 +214,11 @@ static const char *get_level_name(log_level_t level) {
     return message;
 }
 
-void __set_clog_level(log_level_t level) {
+int __set_clog_level(log_level_t level) {
+    if (level > DEBUG || level < FATAL) {
+        return -1;
+    }
+
     log_level = level;
+    return 0;
 }

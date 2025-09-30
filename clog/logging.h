@@ -28,7 +28,7 @@ int log_stdout_append();
 
 int log_file_append(const char *path);
 
-void __set_clog_level(log_level_t level);
+int __set_clog_level(log_level_t level);
 
 void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
 

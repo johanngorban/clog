@@ -123,7 +123,7 @@ int __clog_init(size_t args, ...) {
 }
 
 void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
-    if (level < log_level) {
+    if (level > log_level) {
         return;
     }
 

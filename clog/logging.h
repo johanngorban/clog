@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "types.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -32,3 +36,7 @@ void __log(log_level_t level, const char *message, const char *file, const size_
 int __log_init(size_t args, ...); 
 
 void log_exit();
+
+#ifdef __cplusplus
+}
+#endif

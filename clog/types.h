@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stddef.h>
 
@@ -20,3 +24,7 @@ typedef struct {
     log_closer close; 
     void *context;
 } log_destinations_t;
+
+#ifdef __cplusplus
+}
+#endif

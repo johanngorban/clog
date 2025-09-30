@@ -23,6 +23,7 @@ extern "C" {
 #define set_warning()           __set_clog_level(WARNING)
 #define set_error()             __set_clog_level(ERROR)
 #define set_fatal_only()        __set_clog_level(FATAL)
+#define set_log_level(l)        __set_clog_level(l)
 
 /*
 *   Interface functions

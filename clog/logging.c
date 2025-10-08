@@ -14,11 +14,11 @@
 /*
 * Main objects and flags
 */
-static bool logging_init = false;
 
 static log_level_t log_level = INFO;
 
 static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
+
 static size_t log_dest_counter = 0;
 
 pthread_mutex_t logs_mutex;
@@ -93,23 +93,6 @@ int log_stdout_append() {
     return 1;
 }
 
-/*
-* General functions
-*/
-int log_init() {
-    if (logging_init == true) {
-        return -1;
-    }
-
-    pthread_mutex_init(&logs_mutex, NULL);
-
-    logging_init = true;
-
-    atexit(log_exit);
-
-    return 0;
-}
-
 void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
     if (level > log_level) {
         return;
@@ -147,7 +130,6 @@ void log_exit() {
     }
 
     log_dest_counter = 0;
-    logging_init = false;
 
     pthread_mutex_unlock(&logs_mutex);
 

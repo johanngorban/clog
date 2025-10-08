@@ -28,13 +28,6 @@ typedef enum {
 ### Functions
 
 ```c
-size_t log_init(...)
-```
-
-`log_init` is the main function to *start* logging. It accepts as many log file paths as you want. It is your responsibility to manage memory - init as many log files as you *need*. It requires one path at least and returns the count of initialized files.
-
-
-```c
 int log_file_append(const char *path)
 ```
 

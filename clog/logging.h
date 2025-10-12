@@ -21,6 +21,13 @@ extern "C" {
 #define set_fatal_only()        __set_clog_level(FATAL)
 #define set_log_level(l)        __set_clog_level(l)
 
+#define LOG_DATE 0
+#define LOG_TIME 1
+#define LOG_PATH 2
+#define LOG_LINE 4
+#define LOG_SHORT   LOG_DATE | LOG_TIME
+#define LOG_FULL    LOG_DATE | LOG_TIME | LOG_PATH | LOG_LINE
+
 typedef enum {
     FATAL   = 0,
     ERROR   = 1,
@@ -43,6 +50,8 @@ typedef struct {
 int log_stdout_append();
 
 int log_file_append(const char *path);
+
+int set_clog_flags(unsigned int flags);
 
 int _set_clog_level(log_level_t level);
 

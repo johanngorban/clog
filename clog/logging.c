@@ -21,6 +21,8 @@ static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
 
 static size_t log_dest_counter = 0;
 
+static unsigned int log_flags = LOG_SHORT;
+
 pthread_mutex_t logs_mutex;
 
 /*
@@ -150,23 +152,77 @@ static void print_log(const char *log) {
     pthread_mutex_unlock(&logs_mutex);
 }
 
-static const char *create_log(log_level_t level, const char *message, const time_t *time, const char *file, const size_t line) {
-    struct tm *timeinfo = localtime(time);
-    char time_buffer[20];
-    strftime(time_buffer, sizeof(time_buffer), "%d/%m/%y %H:%M:%S", timeinfo);
+static const char *create_log(
+    log_level_t level, 
+    const char *message, 
+    const time_t *time, 
+    const char *file, 
+    const size_t line) 
+{
+    char time_buffer[32] = "";
+    char date_part[16] = "";
+    char time_part[16] = "";
+    char line_number[MAX_LINE_NUMBER_LENGTH] = "";
+    char path_part[256] = "";
 
-    const char *level_str = get_level_name(level);
+    if (time != NULL) {
+        struct tm timeinfo;
 
-    char line_number[MAX_LINE_NUMBER_LENGTH];
-    sprintf(line_number, "%zu", line);
-    
+        struct tm *tmp = localtime(time);
+        if (tmp) {
+            timeinfo = *tmp;
+        }
+
+        if (log_flags & LOG_DATE) {
+            strftime(date_part, sizeof(date_part), "%d/%m/%y", &timeinfo);
+        }
+        if (log_flags & LOG_TIME) {
+            strftime(time_part, sizeof(time_part), "%H:%M:%S", &timeinfo);
+        }
+    }
+
+    if (log_flags & LOG_LINE) {
+        snprintf(line_number, sizeof(line_number), "%zu", line);
+    }
+
+    if (log_flags & LOG_PATH) {
+        snprintf(path_part, sizeof(path_part), "%s", file);
+    }
+
     char *log = malloc(MAX_LOG_LENGTH);
     if (log == NULL) {
         return NULL;
     }
 
-    sprintf(log, "%-17s %s line: %s %-8s %s\n", time_buffer, file, line_number, level_str, message);
-    
+    const char *level_str = get_level_name(level);
+    log[0] = '\0';
+
+    if ((log_flags & LOG_DATE) && date_part[0]) {
+        strcat(log, date_part);
+        strcat(log, " ");
+    }
+    if ((log_flags & LOG_TIME) && time_part[0]) {
+        strcat(log, time_part);
+        strcat(log, " ");
+    }
+    if ((log_flags & LOG_PATH) && path_part[0]) {
+        strcat(log, path_part);
+        strcat(log, " ");
+    }
+    if ((log_flags & LOG_LINE) && line_number[0]) {
+        strcat(log, "line:");
+        strcat(log, line_number);
+        strcat(log, " ");
+    }
+
+    snprintf(
+        log + strlen(log),
+        MAX_LOG_LENGTH - strlen(log),
+        "%-8s %s\n",
+        level_str,
+        message
+    );
+
     return log;
 } 
 
@@ -194,6 +250,10 @@ static const char *get_level_name(log_level_t level) {
     }
 
     return message;
+}
+
+int set_clog_flags(unsigned int flags) {
+    log_flags = flags;
 }
 
 int _set_clog_level(log_level_t level) {

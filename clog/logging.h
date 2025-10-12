@@ -4,9 +4,9 @@
 extern "C" {
 #endif
 
-#include "types.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <stddef.h>
 
 #define log_debug(fmt, ...)   __clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define log_info(fmt, ...)    __clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
@@ -21,18 +21,32 @@ extern "C" {
 #define set_fatal_only()        __set_clog_level(FATAL)
 #define set_log_level(l)        __set_clog_level(l)
 
-/*
-*   Interface functions
-*/
+typedef enum {
+    FATAL   = 0,
+    ERROR   = 1,
+    INFO    = 2,
+    WARNING = 3,
+    DEBUG   = 4,
+} log_level_t;
+
+typedef void (*log_printer)(const char *message, void *context);
+
+typedef void (*log_closer)(void *context);
+
+typedef struct {
+    log_printer print;
+    log_closer close; 
+    void *context;
+} log_destinations_t;
+
+
 int log_stdout_append();
 
 int log_file_append(const char *path);
 
-int __set_clog_level(log_level_t level);
+int _set_clog_level(log_level_t level);
 
-void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
-
-int log_init(); 
+void _clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
 
 void log_exit();
 

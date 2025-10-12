@@ -93,7 +93,7 @@ int log_stdout_append() {
     return 1;
 }
 
-void __clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
+void _clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
     if (level > log_level) {
         return;
     }
@@ -196,7 +196,7 @@ static const char *get_level_name(log_level_t level) {
     return message;
 }
 
-int __set_clog_level(log_level_t level) {
+int _set_clog_level(log_level_t level) {
     if (level > DEBUG || level < FATAL) {
         return -1;
     }

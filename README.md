@@ -12,6 +12,21 @@ clog is built using pure C and CMake, so it does not require any other dependenc
 # API reference
 You can use direct or mediaded logging. Direct logging allows you specify what type of logging you want to use (the list below), message you want to see in the log, log source file and line. Instead of that you can use mediaded (e.g. simplified) functions.
 
+## Log flags
+There are a several log flags you can use to configure your logs
+```
+#define LOG_DATE 0 // Add date dd/mm/yy
+#define LOG_TIME 1 // Add time hh/mm/ss
+#define LOG_PATH 2 // Add full path of log source
+#define LOG_LINE 4 // Add line number
+
+// Shortcuts
+#define LOG_SHORT   LOG_DATE | LOG_TIME
+#define LOG_FULL    LOG_DATE | LOG_TIME | LOG_PATH | LOG_LINE
+```
+
+Using thems, you can specify information you want to log. As you can see, log type and message are still required
+
 
 ### Log types
 The log type you need to specify to make a log note. There is no point to describe every type, I hope these names are clear enough

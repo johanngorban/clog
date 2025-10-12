@@ -252,15 +252,14 @@ static const char *get_level_name(log_level_t level) {
     return message;
 }
 
-void set_clog_flags(unsigned int flags) {
+void set_log_flags(unsigned int flags) {
     log_flags = flags;
 }
 
-int _set_clog_level(log_level_t level) {
+void set_log_level(log_level_t level) {
     if (level > DEBUG || level < FATAL) {
-        return -1;
+        return;
     }
 
     log_level = level;
-    return 0;
 }

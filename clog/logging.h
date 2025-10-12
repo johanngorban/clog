@@ -14,12 +14,12 @@ extern "C" {
 #define log_error(fmt, ...)   __clog(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define log_fatal(fmt, ...)   __clog(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
-#define set_debug()             __set_clog_level(DEBUG)
-#define set_info()              __set_clog_level(INFO)
-#define set_warning()           __set_clog_level(WARNING)
-#define set_error()             __set_clog_level(ERROR)
-#define set_fatal_only()        __set_clog_level(FATAL)
-#define set_log_level(l)        __set_clog_level(l)
+#define set_log_debug()             set_log_level(DEBUG)
+#define set_log_info()              set_log_level(INFO)
+#define set_log_warning()           set_log_level(WARNING)
+#define set_log_error()             set_log_level(ERROR)
+#define set_log_fatal_only()        set_log_level(FATAL)
+#define set_log_log_level(l)        set_log_level(l)
 
 #define LOG_DATE 0
 #define LOG_TIME 1
@@ -51,9 +51,9 @@ int log_stdout_append();
 
 int log_file_append(const char *path);
 
-void set_clog_flags(unsigned int flags);
+void set_log_flags(unsigned int flags);
 
-int _set_clog_level(log_level_t level);
+void set_log_level(log_level_t level);
 
 void _clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
 

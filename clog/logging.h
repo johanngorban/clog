@@ -8,11 +8,11 @@ extern "C" {
 #include <stdarg.h>
 #include <stddef.h>
 
-#define log_debug(fmt, ...)   __clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_info(fmt, ...)    __clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_warning(fmt, ...) __clog(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_error(fmt, ...)   __clog(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_fatal(fmt, ...)   __clog(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_debug(fmt, ...)   _clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_info(fmt, ...)    _clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_warning(fmt, ...) _clog(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_error(fmt, ...)   _clog(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_fatal(fmt, ...)   _clog(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #define set_log_debug()             set_log_level(DEBUG)
 #define set_log_info()              set_log_level(INFO)

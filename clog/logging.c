@@ -252,7 +252,7 @@ static const char *get_level_name(log_level_t level) {
     return message;
 }
 
-int set_clog_flags(unsigned int flags) {
+void set_clog_flags(unsigned int flags) {
     log_flags = flags;
 }
 

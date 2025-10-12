@@ -51,7 +51,7 @@ int log_stdout_append();
 
 int log_file_append(const char *path);
 
-int set_clog_flags(unsigned int flags);
+void set_clog_flags(unsigned int flags);
 
 int _set_clog_level(log_level_t level);
 

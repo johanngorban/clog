@@ -32,30 +32,31 @@ Using thems, you can specify information you want to log. As you can see, log ty
 The log type you need to specify to make a log note. There is no point to describe every type, I hope these names are clear enough
 ```c
 typedef enum {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL
-} LoggingType;
+    FATAL   = 0,
+    ERROR   = 1,
+    INFO    = 2,
+    WARNING = 3,
+    DEBUG   = 4,
+} log_level_t;
 ```
 
 ### Functions
+
+```c
+void set_clog_flags(unsigned int flags)
+```
+Set log flags, see "Log flags" section above for details
+
+```c
+int log_stdout_append()
+```
+Call it, if you need to log into stdout
 
 ```c
 int log_file_append(const char *path)
 ```
 
 You can `log_file_append` if you need add one more log file. It requires the file path. Returns `1` if file initialized successfully and `0` otherwise.
-
-```c
-void logger(LoggingType type, const char *message)
-```
-
-`logger` is the main function for logging. It needs only log type and message you want to display. It will display the message in all log files you initialized before. 
-
-Note: if you want more control and need to specify source file and line, you can use `logger_` instead. See source code for that
-
 
 ```c
 void log_debug(message_)

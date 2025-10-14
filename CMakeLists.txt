@@ -6,13 +6,21 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 include(GNUInstallDirs)
 
+option(BUILD_SHARED_LIB "Build using shared lib" ON)
+
 file(GLOB_RECURSE SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/clog/*.c
 )
 
-option(BUILD_SHARED_LIB, "Build using shared lib", ON)
+if (WIN32 AND BUILD_SHARED_LIB)
+    add_definitions(-DCLOG_EXPORTS)
+endif()
 
-add_library(clog ${SOURCES})
+if (BUILD_SHARED_LIB)
+    add_library(clog SHARED ${SOURCES})
+else()
+    add_library(clog STATIC ${SOURCES})
+endif()
 
 target_include_directories(clog
     PUBLIC

@@ -12,6 +12,8 @@ file(GLOB_RECURSE SOURCES
 
 option(BUILD_SHARED_LIB, "Build using shared lib", ON)
 
+add_library(clog ${SOURCES})
+
 target_include_directories(clog
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

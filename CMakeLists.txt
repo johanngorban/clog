@@ -10,9 +10,7 @@ file(GLOB_RECURSE SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/clog/*.c
 )
 
-add_library(clog STATIC 
-    ${SOURCES}
-)
+option(BUILD_SHARED_LIB, "Build using shared lib", ON)
 
 target_include_directories(clog
     PUBLIC

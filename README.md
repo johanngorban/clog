@@ -9,6 +9,32 @@ clog is built using pure C and CMake, so it does not require any other dependenc
 - gcc or clang (c11)
 ---
 
+# How to build
+Follow the steps below to build clog
+
+```bash
+# build shared (so/dll) library
+cmake -B build -DBUILD_SHARED_LIB=ON
+cd build
+# install library into the system
+make install
+```
+
+> Note: sometimes you need to run `make install` as sudo.
+
+Now you can use clog. Here is CMake instructions you need to use clog
+
+```cmake
+find_package(clog REQUIRED)
+
+target_link_libraries(YOUR_PROGRAM
+    PUBLIC
+        clog
+)
+```
+
+---
+
 # API reference
 You can use direct or mediaded logging. Direct logging allows you specify what type of logging you want to use (the list below), message you want to see in the log, log source file and line. Instead of that you can use mediaded (e.g. simplified) functions.
 

@@ -33,6 +33,13 @@ target_link_libraries(YOUR_PROGRAM
 )
 ```
 
+### Cannot open shared object file on Linux
+If you get a message: `error while loading shared libraries: libclog.so: cannot open shared object file: No such file or directory`, you need to run the following commands:
+```bash
+echo "/usr/local/lib64" | sudo tee /etc/ld.so.conf.d/clog.conf
+sudo ldconfig
+```
+
 ---
 
 # API reference

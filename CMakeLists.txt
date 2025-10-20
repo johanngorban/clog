@@ -22,6 +22,14 @@ else()
     add_library(clog STATIC ${SOURCES})
 endif()
 
+if (APPLE AND BUILD_SHARED_LIB)
+    set_target_properties(clog
+        PROPERTIES
+            MACOSX_RPATH OFF
+            INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+    )
+endif()
+
 target_include_directories(clog
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>

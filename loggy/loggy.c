@@ -95,7 +95,12 @@ int log_stdout_append() {
     return 1;
 }
 
-void _clog(log_level_t level, const char *file, const size_t line, const char *fmt, ...) {
+void _clog(
+    log_level_t level, 
+    const char *file, 
+    const size_t line, 
+    const char *fmt, ...
+) {
     if (level > log_level) {
         return;
     }

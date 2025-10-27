@@ -8,11 +8,11 @@ extern "C" {
 #include <stdarg.h>
 #include <stddef.h>
 
-#define log_debug(fmt, ...)   _loggy(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_info(fmt, ...)    _loggy(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_warning(fmt, ...) _loggy(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_error(fmt, ...)   _loggy(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define log_fatal(fmt, ...)   _loggy(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_debug(fmt, ...)   _clog(DEBUG,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_info(fmt, ...)    _clog(INFO,   __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_warning(fmt, ...) _clog(WARNING,__FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_error(fmt, ...)   _clog(ERROR,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define log_fatal(fmt, ...)   _clog(FATAL,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 #define set_log_debug()             set_log_level(DEBUG)
 #define set_log_info()              set_log_level(INFO)
@@ -55,7 +55,12 @@ void set_log_flags(unsigned int flags);
 
 void set_log_level(log_level_t level);
 
-void _loggy(log_level_t level, const char *file, const size_t line, const char *fmt, ...);
+void _clog(
+    log_level_t level, 
+    const char *file, 
+    const size_t line, 
+    const char *fmt, ...
+);
 
 void log_exit();
 

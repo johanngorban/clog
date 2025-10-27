@@ -1,4 +1,4 @@
-#include "logging.h"
+#include "loggy.h"
 
 #include <time.h>
 #include <string.h>

@@ -30,13 +30,22 @@ pthread_mutex_t logs_mutex;
 */
 static const char *get_level_name(log_level_t level);
 
-static const char *create_log(log_level_t level, const char *message, const time_t *time, const char *file, const size_t line);
+static const char *create_log(
+    log_level_t level, 
+    const char *message, 
+    const time_t *time, 
+    const char *file, 
+    const size_t line
+);
 
 static void print_log(const char *log);
 
 // File sinks
 
-static void file_log_print(const char *message, void *context) {
+static void file_log_print(
+    const char *message, 
+    void *context
+) {
     FILE *f = (FILE *) context;
 
     if (f == NULL) {
@@ -76,7 +85,10 @@ int log_file_append(const char *path) {
 
 // Stdout sinks
 
-static void stdout_log_print(const char *message, void *context) {
+static void stdout_log_print(
+    const char *message, 
+    void *context
+) {
     (void) context;
     printf("%s", message);
 }
@@ -95,7 +107,7 @@ int log_stdout_append() {
     return 1;
 }
 
-void _clog(
+void _loggy(
     log_level_t level, 
     const char *file, 
     const size_t line, 

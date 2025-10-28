@@ -1,4 +1,4 @@
-#include <clog/logging.h>
+#include <loggy.h>
 
 int main() {
     set_log_info();

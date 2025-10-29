@@ -1,9 +1,7 @@
 #include <loggy.h>
 
 int main() {
-    set_log_info();
-
-    log_file_append("simple.log"); // If doesn't exist, create the log file
+    log_init(INFO, LOG_DEFAULT);
 
     log_stdout_append(); // Write in stdout
 

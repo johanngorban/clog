@@ -4,13 +4,13 @@ A lightweight logging library for C projects, supporting multiple log levels and
 
 ---
 # How to use
-clog is built using pure C and CMake, so it does not require any other dependencies. All you need is in the list below:
+loggy is built using pure C and CMake, so it does not require any other dependencies. All you need is in the list below:
 - CMake (starting with 3.16)
 - gcc or clang (c11)
 ---
 
 # How to build
-Follow the steps below to build clog
+Follow the steps below to build loggy
 
 ```bash
 # build shared (so/dll) library
@@ -22,21 +22,21 @@ make install
 
 > Note: sometimes you need to run `make install` as sudo.
 
-Now you can use clog. Here is CMake instructions you need to use clog
+Now you can use loggy. Here is CMake instructions you need to use loggy
 
 ```cmake
-find_package(clog REQUIRED)
+find_package(loggy REQUIRED)
 
 target_link_libraries(YOUR_PROGRAM
     PUBLIC
-        clog
+        loggy
 )
 ```
 
 ### Cannot open shared object file on Linux
-If you get a message: `error while loading shared libraries: libclog.so: cannot open shared object file: No such file or directory`, you need to run the following commands:
+If you get a message: `error while loading shared libraries: libloggy.so: cannot open shared object file: No such file or directory`, you need to run the following commands:
 ```bash
-echo "/usr/local/lib64" | sudo tee /etc/ld.so.conf.d/clog.conf
+echo "/usr/local/lib64" | sudo tee /etc/ld.so.conf.d/loggy.conf
 sudo ldconfig
 ```
 
@@ -76,7 +76,7 @@ typedef enum {
 ### Functions
 
 ```c
-void set_clog_flags(unsigned int flags)
+void set_loggy_flags(unsigned int flags)
 ```
 Set log flags, see "Log flags" section above for details
 

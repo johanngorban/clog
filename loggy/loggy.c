@@ -15,15 +15,17 @@
 * Main objects and flags
 */
 
+static uint8_t log_initialized = 0;
+
 static log_level_t log_level = INFO;
 
 static log_destinations_t log_destinations[MAX_DESTINATION_COUNT];
 
 static size_t log_dest_counter = 0;
 
-static unsigned int log_flags = LOG_SHORT;
+static unsigned int log_flags = LOG_DEFAULT;
 
-pthread_mutex_t logs_mutex;
+pthread_mutex_t log_mutex;
 
 /*
 * Helper functions
@@ -33,9 +35,7 @@ static const char *get_level_name(log_level_t level);
 static const char *create_log(
     log_level_t level, 
     const char *message, 
-    const time_t *time, 
-    const char *file, 
-    const size_t line
+    const time_t *time
 );
 
 static void print_log(const char *log);
@@ -107,13 +107,49 @@ int log_stdout_append() {
     return 1;
 }
 
+int log_init(log_level_t level, uint8_t flags) {
+    if (log_initialized != 0) {
+        return -1;
+    }
+    
+    if (level > DEBUG || level < FATAL) {
+        return -1;
+    }
+
+    pthread_mutex_init(&log_mutex, NULL);
+    log_flags = flags;
+    log_level = level;
+
+    atexit(log_shutdown);
+
+    log_initialized = 1;
+
+    return 0;
+}
+
+void log_shutdown() {
+    pthread_mutex_lock(&log_mutex);
+
+    for (size_t i = 0; i < log_dest_counter; i++) {
+        if (log_destinations[i].close != NULL) {
+            log_destinations[i].close(log_destinations[i].context);
+        }
+    }
+
+    log_dest_counter = 0;
+
+    pthread_mutex_unlock(&log_mutex);
+    pthread_mutex_destroy(&log_mutex);
+
+    log_initialized = 0;
+
+}
+
 void _loggy(
     log_level_t level, 
-    const char *file, 
-    const size_t line, 
     const char *fmt, ...
 ) {
-    if (level > log_level) {
+    if (log_initialized == 0 || level > log_level) {
         return;
     }
 
@@ -127,7 +163,7 @@ void _loggy(
     time_t raw_time;
     time(&raw_time);
 
-    const char *log = create_log(level, message, &raw_time, file, line);
+    const char *log = create_log(level, message, &raw_time);
     if (log == NULL) {
         return;
     }
@@ -139,48 +175,27 @@ void _loggy(
     return;
 }
 
-void log_exit() {
-    pthread_mutex_lock(&logs_mutex);
-
-    for (size_t i = 0; i < log_dest_counter; i++) {
-        if (log_destinations[i].close != NULL) {
-            log_destinations[i].close(log_destinations[i].context);
-        }
-    }
-
-    log_dest_counter = 0;
-
-    pthread_mutex_unlock(&logs_mutex);
-
-    pthread_mutex_destroy(&logs_mutex);
-}
-
-
 /*
 * Helper functions
 */
 static void print_log(const char *log) {
-    pthread_mutex_lock(&logs_mutex);
+    pthread_mutex_lock(&log_mutex);
 
     for (size_t i = 0; i < log_dest_counter; i++) {
         log_destinations[i].print(log, log_destinations[i].context);
     }
 
-    pthread_mutex_unlock(&logs_mutex);
+    pthread_mutex_unlock(&log_mutex);
 }
 
 static const char *create_log(
     log_level_t level, 
     const char *message, 
-    const time_t *time, 
-    const char *file, 
-    const size_t line) 
-{
+    const time_t *time
+) {
     char time_buffer[32] = "";
     char date_part[16] = "";
     char time_part[16] = "";
-    char line_number[MAX_LINE_NUMBER_LENGTH] = "";
-    char path_part[256] = "";
 
     if (time != NULL) {
         struct tm timeinfo;
@@ -198,14 +213,6 @@ static const char *create_log(
         }
     }
 
-    if (log_flags & LOG_LINE) {
-        snprintf(line_number, sizeof(line_number), "%zu", line);
-    }
-
-    if (log_flags & LOG_PATH) {
-        snprintf(path_part, sizeof(path_part), "%s", file);
-    }
-
     char *log = malloc(MAX_LOG_LENGTH);
     if (log == NULL) {
         return NULL;
@@ -220,15 +227,6 @@ static const char *create_log(
     }
     if ((log_flags & LOG_TIME) && time_part[0]) {
         strcat(log, time_part);
-        strcat(log, " ");
-    }
-    if ((log_flags & LOG_PATH) && path_part[0]) {
-        strcat(log, path_part);
-        strcat(log, " ");
-    }
-    if ((log_flags & LOG_LINE) && line_number[0]) {
-        strcat(log, "line:");
-        strcat(log, line_number);
         strcat(log, " ");
     }
 
@@ -267,16 +265,4 @@ static const char *get_level_name(log_level_t level) {
     }
 
     return message;
-}
-
-void set_log_flags(unsigned int flags) {
-    log_flags = flags;
-}
-
-void set_log_level(log_level_t level) {
-    if (level > DEBUG || level < FATAL) {
-        return;
-    }
-
-    log_level = level;
 }

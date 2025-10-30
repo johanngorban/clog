@@ -10,7 +10,7 @@
     Author: Ivan Gorban
     License: MIT
     Repository: https://github.com/johanngorban/loggy
-    Version: 1.3.1
+    Version: 1.4-alpha
 ==============================================================
 */
 #pragma once

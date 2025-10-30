@@ -24,11 +24,11 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-#define LOG_NONE        (0)
-#define LOG_DATE        (1 << 0)
-#define LOG_TIME        (1 << 1)
-#define LOG_DEFAULT     (LOG_TIME)
-#define LOG_FULL        (LOG_TIME | LOG_DATE)
+#define LOG_NONE        (0)         // No date and time
+#define LOG_DATE        (1 << 0)    // Add date dd/mm/yy
+#define LOG_TIME        (1 << 1)    // Add time hh/mm/ss
+#define LOG_DEFAULT     (LOG_TIME)  // Add time
+#define LOG_FULL        (LOG_TIME | LOG_DATE) // Add date and time
 
 typedef enum {
     FATAL   = 0,

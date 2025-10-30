@@ -48,14 +48,13 @@ You can use direct or mediaded logging. Direct logging allows you specify what t
 ## Log flags
 There are a several log flags you can use to configure your logs
 ```
-#define LOG_DATE 0 // Add date dd/mm/yy
-#define LOG_TIME 1 // Add time hh/mm/ss
-#define LOG_PATH 2 // Add full path of log source
-#define LOG_LINE 4 // Add line number
+#define LOG_NONE        (0)         // No date and time
+#define LOG_DATE        (1 << 0)    // Add date dd/mm/yy
+#define LOG_TIME        (1 << 1)    // Add time hh/mm/ss
 
 // Shortcuts
-#define LOG_SHORT   LOG_DATE | LOG_TIME
-#define LOG_FULL    LOG_DATE | LOG_TIME | LOG_PATH | LOG_LINE
+#define LOG_DEFAULT     (LOG_TIME)  // Add time
+#define LOG_FULL        (LOG_TIME | LOG_DATE) // Add date and time
 ```
 
 Using thems, you can specify information you want to log. As you can see, log type and message are still required
@@ -74,33 +73,54 @@ typedef enum {
 ```
 
 ### Functions
+```c
+int8_t log_init(
+    log_level_t level, 
+    uint8_t flags
+)
+```
+Init log module and set default log level and flags. Return 0 on success or if the module is initialized. Return -1 if wrong log level data was given.
 
 ```c
-void set_loggy_flags(unsigned int flags)
+void log_set_level(log_level_t level)
+```
+Set log level, see "Log types" section for details
+
+```c
+void log_set_flags(uint8_t flags)
 ```
 Set log flags, see "Log flags" section above for details
 
 ```c
-int log_stdout_append()
+int8_t log_add_stdout_sink()
 ```
 Call it, if you need to log into stdout
 
 ```c
-int log_file_append(const char *path)
+int8_t log_add_file_sink(const char *path)
 ```
 
-You can `log_file_append` if you need add one more log file. It requires the file path. Returns `1` if file initialized successfully and `0` otherwise.
+```c
+int8_t log_add_custom_sink(
+    log_printer printer,
+    log_closer closer,
+    void *ctx
+)
+```
+Add a custom sink (UART or something else).
+
+You can `log_add_file_sink` if you need add one more log file. It requires the file path.
 
 ```c
-void log_debug(message_)
+void log_debug(message)
 
-void log_info(message_)
+void log_info(message)
 
-void log_warning(message_)
+void log_warning(message)
 
-void log_error(message_)
+void log_error(message)
 
-void log_fatal(message_)
+void log_fatal(message)
 ```
 
 Here is a bunch of functions for simplified logging. There is no need to describe every function separately because of the names. Every function accepts message and displays it in all log files initialized before

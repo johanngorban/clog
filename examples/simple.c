@@ -3,7 +3,7 @@
 int main() {
     log_init(INFO, LOG_DEFAULT);
 
-    log_stdout_append(); // Write in stdout
+    log_add_stdout_sink(); // Write in stdout
 
     log_info("Start the program");
     for (int i = 0; i < 128; i++) {

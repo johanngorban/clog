@@ -1,3 +1,18 @@
+/*
+==============================================================
+    Loggy — Lightweight C Logging Library
+==============================================================
+
+    Cross-platform logging library for C and C++ projects.
+    Supports multiple output sinks (stdout, file, custom),
+    configurable log levels and formatting flags.
+
+    Author: Ivan Gorban
+    License: MIT
+    Repository: https://github.com/johanngorban/loggy
+    Version: 1.3.1
+==============================================================
+*/
 #pragma once
 
 #ifdef __cplusplus
@@ -9,16 +24,11 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
-#define log_debug(fmt, ...)   _loggy(DEBUG,     fmt, ##__VA_ARGS__)
-#define log_info(fmt, ...)    _loggy(INFO,      fmt, ##__VA_ARGS__)
-#define log_warning(fmt, ...) _loggy(WARNING,   fmt, ##__VA_ARGS__)
-#define log_error(fmt, ...)   _loggy(ERROR,     fmt, ##__VA_ARGS__)
-#define log_fatal(fmt, ...)   _loggy(FATAL,     fmt, ##__VA_ARGS__)
-
 #define LOG_NONE        (0)
 #define LOG_DATE        (1 << 0)
 #define LOG_TIME        (1 << 1)
-#define LOG_DEFAULT     (LOG_DATE | LOG_TIME)
+#define LOG_DEFAULT     (LOG_TIME)
+#define LOG_FULL        (LOG_TIME | LOG_DATE)
 
 typedef enum {
     FATAL   = 0,
@@ -29,33 +39,43 @@ typedef enum {
 } log_level_t;
 
 typedef void (*log_printer)(const char *message, void *context);
-
 typedef void (*log_closer)(void *context);
 
 typedef struct {
     log_printer print;
     log_closer close; 
     void *context;
-} log_destinations_t;
+} log_sink_t;
 
-int log_init(
+// --------------------- Initialization ---------------------
+int8_t log_init(
     log_level_t level, 
     uint8_t flags
 );
-
 void log_shutdown();
 
-int log_stdout_append();
+void log_set_level(log_level_t level);
+void log_set_flags(uint8_t flags);
 
-int log_file_append(const char *path);
+// --------------------- Sink Management ---------------------
+int8_t log_add_stdout_sink();
+int8_t log_add_file_sink(const char *path);
+int8_t log_add_custom_sink(
+    log_printer printer,
+    log_closer closer,
+    void *ctx
+);
 
-void set_log_flags(unsigned int flags);
-
-void set_log_level(log_level_t level);
-
-void _loggy(
+// --------------------- Logging ---------------------
+void log_debug(const char *fmt, ...);
+void log_info(const char *fmt, ...);
+void log_warning(const char *fmt, ...);
+void log_error(const char *fmt, ...);
+void log_fatal(const char *fmt, ...);
+void log_message_va(
     log_level_t level, 
-    const char *fmt, ...
+    const char *fmt,
+    va_list args
 );
 
 #ifdef __cplusplus

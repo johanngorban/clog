@@ -1,7 +1,7 @@
 #include <loggy.h>
 
 int main() {
-    log_init(INFO, LOG_DEFAULT);
+    log_init(INFO, LOG_DEFAULT | LOG_COOLORIZED);
 
     log_add_stdout_sink(); // Write in stdout
 

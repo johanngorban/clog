@@ -24,11 +24,24 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 
+// --------------------- ANSI Colors ---------------------
+#define WRAP_COLOR(literal, color) color literal ANSI_RESET
+#define ANSI_RED     "\033[31m"
+#define ANSI_GREEN   "\033[32m"
+#define ANSI_YELLOW  "\033[33m"
+#define ANSI_BLUE    "\033[34m"
+#define ANSI_RESET   "\033[0m"
+
+// --------------------- Log format ---------------------
+
 #define LOG_NONE        (0)         // No date and time
 #define LOG_DATE        (1 << 0)    // Add date dd/mm/yy
 #define LOG_TIME        (1 << 1)    // Add time hh/mm/ss
+#define LOG_COOLORIZED  (1 << 2)    // Add ANSI colors for levels
 #define LOG_DEFAULT     (LOG_TIME)  // Add time
-#define LOG_FULL        (LOG_TIME | LOG_DATE) // Add date and time
+#define LOG_EXTENDED    (LOG_TIME | LOG_DATE) // Add date and time
+
+// --------------------- Log levels ---------------------
 
 typedef enum {
     FATAL   = 0,

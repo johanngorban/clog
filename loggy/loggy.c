@@ -16,11 +16,26 @@
 #define MAX_LOG_LENGTH  (1 << 7)
 #define MAX_SINK_COUNT  (8)
 
+static const char *level_plain[] = {
+    "[FATAL]",
+    "[ERROR]",
+    "[INFO]",
+    "[WARNING]",
+    "[DEBUG]"
+};
+
+static const char *level_colorized[] = {
+    WRAP_COLOR("[FATAL]",   ANSI_RED),
+    WRAP_COLOR("[ERROR]",   ANSI_RED),
+    WRAP_COLOR("[INFO]",    ANSI_BLUE),
+    WRAP_COLOR("[WARNING]", ANSI_YELLOW),
+    WRAP_COLOR("[DEBUG]",   ANSI_GREEN),
+};
 
 // --------------------- Internal State ---------------------
-static uint8_t log_initialized = 0;
-static log_level_t log_level = INFO;
-static uint8_t log_flags = LOG_DEFAULT;
+static uint8_t log_initialized      = 0;
+static log_level_t log_level        = INFO;
+static uint8_t log_flags            = LOG_DEFAULT;
 
 static log_sink_t log_sinks[MAX_SINK_COUNT];
 static uint8_t sink_count = 0;
@@ -273,7 +288,8 @@ static const char *create_log(
         }
     }
 
-    const char *level_str = get_level_name(level);
+    const char *level_str = (log_flags & LOG_COOLORIZED) ? 
+        level_colorized[level] : level_plain[level];
 
     uint8_t offset = 0;
     uint8_t written = 0;
@@ -315,6 +331,7 @@ static const char *create_log(
 
     return log_buffer;
 } 
+
 
 static const char *get_level_name(log_level_t level) {
     char *message;

@@ -51,6 +51,7 @@ There are a several log flags you can use to configure your logs
 #define LOG_NONE        (0)         // No date and time
 #define LOG_DATE        (1 << 0)    // Add date dd/mm/yy
 #define LOG_TIME        (1 << 1)    // Add time hh/mm/ss
+#define LOG_COLORIZED   (1 << 2)    // Add ANSI colors for levels
 
 // Shortcuts
 #define LOG_DEFAULT     (LOG_TIME)  // Add time
@@ -58,7 +59,7 @@ There are a several log flags you can use to configure your logs
 ```
 
 Using thems, you can specify information you want to log. As you can see, log type and message are still required
-
+> **Do not** use `LOG_COLORIZED` flag if you want to log into devices that do not support ANSI colors (i.e. files). Otherwise you will get message with escape-sequence as chars
 
 ### Log types
 The log type you need to specify to make a log note. There is no point to describe every type, I hope these names are clear enough

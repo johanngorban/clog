@@ -288,7 +288,7 @@ static const char *create_log(
         }
     }
 
-    const char *level_str = (log_flags & LOG_COOLORIZED) ? 
+    const char *level_str = (log_flags & LOG_COLORIZED) ? 
         level_colorized[level] : level_plain[level];
 
     uint8_t offset = 0;

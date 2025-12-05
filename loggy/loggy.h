@@ -37,7 +37,7 @@ extern "C" {
 #define LOG_NONE        (0)         // No date and time
 #define LOG_DATE        (1 << 0)    // Add date dd/mm/yy
 #define LOG_TIME        (1 << 1)    // Add time hh/mm/ss
-#define LOG_COOLORIZED  (1 << 2)    // Add ANSI colors for levels
+#define LOG_COLORIZED   (1 << 2)    // Add ANSI colors for levels
 #define LOG_DEFAULT     (LOG_TIME)  // Add time
 #define LOG_EXTENDED    (LOG_TIME | LOG_DATE) // Add date and time
 
